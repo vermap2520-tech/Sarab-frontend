@@ -30,5 +30,3 @@ function App() {
 }
 
 export default App;
-
-// detail page, category page, cart page.

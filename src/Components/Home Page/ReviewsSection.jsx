@@ -36,19 +36,15 @@ export default function ReviewsSection() {
                     <h2 className="mt-3 text-4xl font-black">
                         What Customers Say
                     </h2>
-
                 </div>
 
                 <div className="grid gap-7 md:grid-cols-3">
-
                     {reviews.map((review) => (
                         <article
                             key={review.name}
                             className="rounded-3xl bg-orange-50 p-8"
                         >
-
                             <div className="flex gap-1 text-orange-500">
-
                                 {[1, 2, 3, 4, 5].map(
                                     (star) => (
                                         <Star
@@ -58,9 +54,7 @@ export default function ReviewsSection() {
                                         />
                                     )
                                 )}
-
                             </div>
-
                             <p className="mt-6 leading-8 text-gray-600">
                                 “{review.review}”
                             </p>
