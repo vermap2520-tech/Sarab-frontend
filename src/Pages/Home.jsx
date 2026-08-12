@@ -10,6 +10,7 @@ import Reservation from "../Pages/Reservation";
 import Reviews from "../Pages/Review";
 import ChefsSection from "../Components/Home Page/ChefsSection";
 import Footer from "../Components/Home Page/Footer";
+import ContactSection from "../Components/Home Page/ContactSection";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
         <Reservation />
         <Reviews />
         <ChefsSection />
+        <ContactSection/>
       </main>
     </>
   );
