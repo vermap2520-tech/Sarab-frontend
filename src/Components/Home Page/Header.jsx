@@ -2,19 +2,20 @@ import { useState } from "react";
 import {
     Link,
     NavLink,
+    useNavigate,
 } from "react-router-dom";
 
 import {
     Menu,
     X,
     Search,
+    User,
     ShoppingBag, Utensils
 } from "lucide-react";
 
 export default function Header() {
-    const [isOpen, setIsOpen] =
-        useState(false);
-
+    const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
     const navLinks = [
         {
             name: "Home",
@@ -101,6 +102,9 @@ export default function Header() {
 
                     <button>
                         <Search size={21} />
+                    </button>
+                    <button onClick={() => navigate("/userRegister")}>
+                        <User size={21} />
                     </button>
 
                     <button>

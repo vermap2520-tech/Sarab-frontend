@@ -9,12 +9,16 @@ import Reviews from "./Pages/Review";
 import ProductDetails from "./Components/Details Page/ProductDetails";
 import Reservation from "./Pages/Reservation";
 import Contact from "./Pages/Contact";
+import UserRegister from "./Pages/Auth/UserRegister";
+import UserLogin from "./Pages/Auth/UserLogin";
 
 function App() {
   return (
     <BrowserRouter>
       <Header />
       <Routes>
+        <Route path="/userRegister" element={<UserRegister />} />
+        <Route path="/userlogin" element={<UserLogin />} />
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/menu" element={<Menu />} />
