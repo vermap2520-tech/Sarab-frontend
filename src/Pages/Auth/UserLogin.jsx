@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { LogIn, Mail, Lock, ArrowRight } from "lucide-react";
+import api from "../../api/api";
 
 export default function UserLogin() {
   const navigate = useNavigate();
@@ -34,10 +35,12 @@ export default function UserLogin() {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:5000/api/users/userlogin",
-        user
-      );
+      const res = await api.post("/api/users/userlogin", user)
+
+      // const res = await axios.post(
+      //   "http://localhost:5000/api/users/userlogin",
+      //   user
+      // );
 
       toast.success(res.data.message || "Login successful");
 

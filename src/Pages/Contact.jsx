@@ -13,6 +13,9 @@ export default function Contact() {
                     <h1 className="mt-4 text-5xl font-black sm:text-5xl">
                         Contact Us
                     </h1>
+                    <p>
+                        Have a question, feedback, or want to plan a special event? We'd love to hear from you.
+                    </p>
                 </section>
                 <ContactSection />
             </main>
