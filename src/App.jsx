@@ -14,22 +14,22 @@ import UserLogin from "./Pages/Auth/UserLogin";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/userRegister" element={<UserRegister />} />
-        <Route path="/userlogin" element={<UserLogin />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/chefs" element={<Chefs />} />
-        <Route path="/reviews" element={<Reviews />} />
-        <Route path="/reservation" element={<Reservation />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
-      </Routes>
-      <Footer />
-    </BrowserRouter>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/userRegister" element={<UserRegister />} />
+          <Route path="/userlogin" element={<UserLogin />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/chefs" element={<Chefs />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/reservation" element={<Reservation />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
   );
 }
 
