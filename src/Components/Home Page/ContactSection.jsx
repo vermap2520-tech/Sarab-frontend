@@ -6,6 +6,7 @@ import {
     Clock,
 } from "lucide-react";
 import axios from "axios";
+import api from "../../api/api";
 
 export default function ContactSection() {
     const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ export default function ContactSection() {
 
         try {
             setLoading(true);
-            const res = await axios.post("http://localhost:5000/api/contact/create", formData);
+            const res = await api.post("http://localhost:5000/api/contact/create", formData);
             console.log(res.data);
 
             if (res.data.success) {
@@ -219,14 +220,6 @@ export default function ContactSection() {
                             />
                         </div>
 
-                        {/* Success Message */}
-                        {/* {success && (
-                            <p className="rounded-lg bg-green-100 p-3 font-semibold text-green-700">
-                                {success}
-                            </p>
-                        )} */}
-
-                        {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={loading}
