@@ -36,7 +36,7 @@ export default function ContactSection() {
 
         try {
             setLoading(true);
-            const res = await api.post("http://localhost:5000/api/contact/create", formData);
+            const res = await api.post("/api/contact/create", formData);
             console.log(res.data);
 
             if (res.data.success) {
