@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { UserPlus, Mail, Lock, User, ArrowRight } from "lucide-react";
+import api from "../../api/api";
 
 export default function UserRegister() {
   const navigate = useNavigate();
@@ -44,13 +45,12 @@ export default function UserRegister() {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:5000/api/users/userRegister",
-        {
-          fullname: user.fullname,
-          email: user.email,
-          password: user.password,
-        }
+      const res = await api.post("/api/users/userRegister", user
+        // {
+        //   fullname: user.fullname,
+        //   email: user.email,
+        //   password: user.password,
+        // }
       );
 
       toast.success(res.data.message || "Registration successful");

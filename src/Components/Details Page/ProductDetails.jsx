@@ -1,10 +1,10 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import {
     ChevronLeft, ChevronRight, Clock3, Flame, Heart, Minus, Plus, ShoppingBag, Star, Truck, Utensils,
 } from "lucide-react";
+import api from "../../api/api";
 
 export default function ProductDetails() {
     const { id } = useParams();
@@ -13,16 +13,15 @@ export default function ProductDetails() {
     const [loading, setLoading] = useState(true);
 
     const [quantity, setQuantity] = useState(1);
-    const [isFavorite, setIsFavorite] =
-        useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
 
+    // Get Single Product
     const getProduct = async () => {
         try {
             setLoading(true);
 
-            const res = await axios.get(
-                `http://localhost:5000/api/product/singleProduct/${id}`
-            );
+            const res = await api.get(`/api/product/singleProduct/${id}`);
+            console.log("Product Data:", res.data);
 
             setProduct(res.data.data || res.data.product || res.data);
         } catch (error) {
@@ -56,16 +55,24 @@ export default function ProductDetails() {
 
     const addToCart = async () => {
         try {
-            await axios.post(
-                `http://localhost:5000/api/cart/addtocart/${product._id}`,
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                alert("Please log in to add products to the cart.");
+                return;
+            }
+
+            const res = await api.post(`/api/cart/addtocart`,
+                { id: product._id, quantity: 1, },
                 {
-                    quantity,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    }
                 }
             );
-
-            alert(
-                `${product.title} added to cart`
-            );
+            console.log("Cart Response:", res.data);
+            alert(`${product.title} added to cart`);
         } catch (error) {
             console.error(
                 "Error adding product to cart:", error.res?.data || error.message);
@@ -280,12 +287,12 @@ export default function ProductDetails() {
                         <div className="mt-7 flex flex-wrap items-end gap-4">
 
                             <span className="text-4xl font-black text-orange-600">
-                                ${price.toFixed(2)}
+                                ₹{price.toFixed(2)}
                             </span>
 
                             {discount > 0 && (
                                 <span className="text-xl font-semibold text-slate-400 line-through">
-                                    ${oldPrice.toFixed(2)}
+                                    ₹{oldPrice.toFixed(2)}
                                 </span>
                             )}
 
@@ -390,7 +397,7 @@ export default function ProductDetails() {
                                     Total:
 
                                     <strong className="ml-2 text-lg text-slate-950">
-                                        ${(
+                                        ₹{(
                                             price * quantity
                                         ).toFixed(2)}
                                     </strong>

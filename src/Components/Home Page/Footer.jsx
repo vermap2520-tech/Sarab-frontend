@@ -9,7 +9,7 @@ export default function Footer() {
                 <div>
 
                     <h2 className="text-3xl font-black text-orange-500">
-                        SARAB
+                        SAR<span className="text-white">AB</span>
                     </h2>
 
                     <p className="mt-5 max-w-sm leading-7 text-gray-400">

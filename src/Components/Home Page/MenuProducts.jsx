@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ShoppingCart, Star } from "lucide-react";
-import axios from "axios";
+import api from "../../api/api";
 
 
 const filters = [
@@ -24,10 +24,11 @@ export default function MenuProducts() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    // Get Products
     const getProducts = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("http://localhost:5000/api/product/all");
+            const res = await api.get("/api/product/all");
             console.log(res);
             setProducts(res.data.data);
         } catch (error) {
@@ -37,10 +38,38 @@ export default function MenuProducts() {
         }
     };
 
+    const addToCart = async (product) => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("Please log in to add items to your cart.");
+                return;
+            };
+
+            console.log("Adding product to cart:", product._id);
+
+            const res = await api.post("/api/cart/addtocart",
+                { id: product._id, quantity: 1 },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    }
+                }
+            );
+            console.log(res.data);
+            alert(`${product.title} added to cart successfully!`);
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+        }
+    };
+
+    // Load Products
     useEffect(() => {
         getProducts();
     }, []);
 
+    // Category Filter
     useEffect(() => {
         setActiveFilter(searchParams.get("category") || "All");
     }, [searchParams]);
@@ -48,6 +77,8 @@ export default function MenuProducts() {
     const filteredProducts =
         activeFilter === "All" ? products : products.filter(
             (product) => product.category === activeFilter);
+
+
     return (
         <section className="py-10">
 
@@ -91,7 +122,7 @@ export default function MenuProducts() {
                     {filteredProducts.map(
                         (product) => (
                             <article
-                                key={product.title}
+                                key={product._id}
                                 className="group overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:-translate-y-2 hover:shadow-xl"
                             >
                                 <Link to={`/product/${product._id}`}>
@@ -111,8 +142,13 @@ export default function MenuProducts() {
                                         </div>
                                         <h3 className="mt-3 text-2xl font-black"> {product.title} </h3>
                                         <div className="mt-5 flex items-center justify-between">
-                                            <p className="text-xl font-black text-orange-600"> $ {product.price} </p>
-                                            <button className="rounded-full bg-stone-950 p-3 text-white">
+                                            <p className="text-xl font-black text-orange-600"> ₹ {product.price} </p>
+                                            <button className="rounded-full bg-stone-950 p-3 text-white"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    addToCart(product);
+                                                }}
+                                            >
                                                 <ShoppingCart size={20} />
                                             </button>
                                         </div>

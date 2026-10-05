@@ -1,50 +1,25 @@
-import axios from "axios";
-import { Star, ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ShoppingCart, Star, ArrowRight } from "lucide-react";
+import api from "../../api/api";
 
 export default function HomeMenu() {
-    const [products, setProducts] = useState([
-        {
-            _id: "1",
-            title: "Grilled Chicken",
-            image: "https://themewagon.github.io/sarab/img/menu/1.jpg",
-            description:
-                "Double smashed patty, cheddar cheese, caramelized onions, house pickles and our legendary special sauce. Made fresh to order on a toasted brioche bun.",
-            price: 299,
-            discount: 10,
-        },
-        {
-            _id: "2",
-            title: "Margherita Royale",
-            image: "https://themewagon.github.io/sarab/img/menu/2.jpg",
-            description:
-                "San Marzano tomatoes, fresh buffalo mozzarella, fragrant basil leaves, drizzled with Italian truffle oil on a hand-stretched sourdough base.",
-            price: 299,
-            discount: 29,
-        },
-        {
-            _id: "3",
-            title: "Loaded Fajita Wrap",
-            image: "https://themewagon.github.io/sarab/img/menu/3.jpg",
-            description:
-                "Grilled chicken strips, sauteed bell peppers and onions, sour cream, fresh guacamole and salsa wrapped in a warm flour tortilla with melted cheddar.",
-            price: 349,
-            discount: 16,
-        },
-    ]);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const getProducts = async () => {
         try {
-            const res = await axios.get(
-                "http://localhost:5000/api/product/all"
-            );
+            setLoading(true);
 
-            if (res.data?.data?.length > 0) {
-                setProducts(res.data.data);
-            }
+            const res = await api.get("/api/product/all");
+
+            // Only first 3 products for Home page
+            setProducts(res.data.data.slice(0, 3));
         } catch (error) {
             console.error("Error fetching products:", error);
+            setProducts([]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -52,130 +27,117 @@ export default function HomeMenu() {
         getProducts();
     }, []);
 
-    const getDiscountedPrice = (price, discount) => {
-        return Math.round(price - (price * discount) / 100);
-    };
-
     return (
-        <section className="bg-stone-50 py-20">
+        <section className="bg-white py-20">
             <div className="mx-auto max-w-7xl px-5">
 
-                {/* Section Heading */}
-                <div className="mx-auto mb-12 max-w-2xl text-center">
-                    <p className="mb-3 text-sm font-bold uppercase tracking-[5px] text-orange-500">
-                        Our Special Menu
+                {/* Heading */}
+                <div className="text-center">
+                    <p className="font-bold uppercase tracking-[4px] text-orange-600">
+                        Delicious Menu
                     </p>
 
-                    <h2 className="text-4xl font-extrabold text-lime-950 sm:text-5xl">
-                        Delicious Food For You
+                    <h2 className="mt-3 text-4xl font-black text-stone-950 md:text-5xl">
+                        Popular Food Items
                     </h2>
 
-                    <p className="mt-5 leading-7 text-gray-500">
-                        Enjoy freshly prepared food made with quality ingredients
-                        and delicious flavors.
+                    <p className="mx-auto mt-4 max-w-2xl text-gray-600">
+                        Discover our most popular and delicious food items,
+                        freshly prepared just for you.
                     </p>
                 </div>
 
-                {/* Products */}
-                <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-                    {products.slice(0, 3).map((product) => {
-                        const finalPrice = getDiscountedPrice(
-                            product.price,
-                            product.discount || 0
-                        );
+                {/* Loading */}
+                {loading && (
+                    <div className="py-20 text-center">
+                        <p className="text-lg font-semibold text-gray-500">
+                            Loading delicious food...
+                        </p>
+                    </div>
+                )}
 
-                        return (
-                            <div
+                {/* Products */}
+                {!loading && (
+                    <div className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+
+                        {products.map((product) => (
+                            <article
                                 key={product._id}
-                                className="group overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-xl"
+                                className="group overflow-hidden rounded-3xl border bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl"
                             >
                                 {/* Product Image */}
                                 <Link to={`/product/${product._id}`}>
-                                    <div className="relative h-64 overflow-hidden">
+                                    <div className="h-64 overflow-hidden">
                                         <img
-                                            src={product.image}
+                                            src={`http://localhost:5000/image-uploads/${product.image}`}
                                             alt={product.title}
                                             className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-                                            // onError={(e) => { e.currentTarget.src = "https://themewagon.github.io/sarab/img/menu/1.jpg" }}
                                         />
-
-                                        {/* Rating */}
-                                        <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-white px-3 py-2 text-sm font-bold text-lime-950 shadow">
-                                            <Star
-                                                size={16}
-                                                className="fill-orange-400 text-orange-400"
-                                            />
-                                            4.8
-                                        </div>
-
-                                        {/* Discount */}
-                                        {product.discount > 0 && (
-                                            <div className="absolute left-4 top-4 rounded-full bg-green-500 px-3 py-2 text-xs font-bold text-white">
-                                                {product.discount}% OFF
-                                            </div>
-                                        )}
                                     </div>
                                 </Link>
 
-                                {/* Product Details */}
+                                {/* Product Content */}
                                 <div className="p-6">
+
+                                    {/* Rating */}
+                                    <div className="flex items-center gap-1 text-orange-500">
+                                        <Star
+                                            size={17}
+                                            fill="currentColor"
+                                        />
+
+                                        <span className="font-bold">
+                                            4.8
+                                        </span>
+                                    </div>
+
+                                    {/* Title */}
                                     <Link to={`/product/${product._id}`}>
-                                        <h3 className="text-xl font-bold text-lime-950 transition hover:text-orange-500">
+                                        <h3 className="mt-3 text-2xl font-black text-stone-950 transition hover:text-orange-600">
                                             {product.title}
                                         </h3>
                                     </Link>
 
-                                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-gray-500">
-                                        {product.description}
-                                    </p>
+                                    {/* Description */}
+                                    {product.description && (
+                                        <p className="mt-2 line-clamp-2 text-sm text-gray-500">
+                                            {product.description}
+                                        </p>
+                                    )}
 
-                                    <div className="mt-6 flex items-center justify-between gap-3">
+                                    {/* Price + Cart */}
+                                    <div className="mt-5 flex items-center justify-between">
 
-                                        {/* Price */}
-                                        <div>
-                                            <span className="text-2xl font-extrabold text-orange-500">
-                                                ₹{finalPrice}
-                                            </span>
+                                        <p className="text-xl font-black text-orange-600">
+                                            ₹ {product.price}
+                                        </p>
 
-                                            {product.discount > 0 && (
-                                                <span className="ml-2 text-sm text-gray-400 line-through">
-                                                    ₹{product.price}
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* Cart Button */}
                                         <button
                                             type="button"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-
-                                                console.log(
-                                                    "Add to cart:",
-                                                    product
-                                                );
-                                            }}
-                                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lime-950 text-white transition hover:bg-orange-500"
+                                            className="rounded-full bg-stone-950 p-3 text-white transition hover:bg-orange-600"
                                         >
-                                            <ShoppingCart size={19} />
+                                            <ShoppingCart size={20} />
                                         </button>
+
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                            </article>
+                        ))}
 
-                {/* View Full Menu */}
+                    </div>
+                )}
+
+                {/* View All Button */}
                 <div className="mt-12 text-center">
                     <Link
                         to="/menu"
-                        className="inline-flex items-center justify-center rounded-full bg-orange-500 px-9 py-4 text-sm font-bold uppercase tracking-wider text-white transition duration-300 hover:bg-lime-950"
+                        className="inline-flex items-center gap-2 rounded-full bg-orange-600 px-7 py-3 font-bold text-white transition hover:bg-stone-950"
                     >
-                        View Full Menu
+                        View All Menu
+                        <ArrowRight size={20} />
                     </Link>
                 </div>
+
             </div>
         </section>
     );

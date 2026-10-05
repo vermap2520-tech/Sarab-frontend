@@ -11,6 +11,8 @@ import Reservation from "./Pages/Reservation";
 import Contact from "./Pages/Contact";
 import UserRegister from "./Pages/Auth/UserRegister";
 import UserLogin from "./Pages/Auth/UserLogin";
+import Profile from "./Components/Home Page/Profile";
+import Cart from "./Pages/Cart";
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
           <Route path="/userRegister" element={<UserRegister />} />
           <Route path="/userlogin" element={<UserLogin />} />
           <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/chefs" element={<Chefs />} />
@@ -27,6 +30,7 @@ function App() {
           <Route path="/reservation" element={<Reservation />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
         <Footer />
       </BrowserRouter>

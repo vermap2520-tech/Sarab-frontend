@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import api from "../../api/api";
 
 export default function ReservationForm() {
     const [message, setMessage] = useState("");
@@ -19,9 +20,7 @@ export default function ReservationForm() {
 
     const getReservations = async () => {
         try {
-            const res = await axios.get(
-                "http://localhost:5000/api/reservation/all"
-            );
+            const res = await api.get("/api/reservation/all");
 
             setReservations(res.data.data);
         } catch (error) {
@@ -40,10 +39,7 @@ export default function ReservationForm() {
         e.preventDefault();
 
         try {
-            const res = await axios.post(
-                "http://localhost:5000/api/reservation/add",
-                formData
-            );
+            const res = await api.post("/api/reservation/add", formData);
             setMessage(res.data.message);
 
             setFormData({

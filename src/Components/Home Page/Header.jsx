@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Link,
     NavLink,
@@ -10,42 +10,84 @@ import {
     X,
     Search,
     User,
-    ShoppingBag, Utensils
+    ShoppingBag,
+    Utensils,
+    UserCircle,
+    LogOut,
 } from "lucide-react";
+import api from "../../api/api";
 
 export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const [user, setUser] = useState(null);
+
     const navigate = useNavigate();
+
     const navLinks = [
-        {
-            name: "Home",
-            path: "/",
-        },
-        {
-            name: "About",
-            path: "/about",
-        },
-        {
-            name: "Menu",
-            path: "/menu",
-        },
-        {
-            name: "Chefs",
-            path: "/chefs",
-        },
-        {
-            name: "Reservation",
-            path: "/reservation",
-        },
-        {
-            name: "Reviews",
-            path: "/reviews",
-        },
-        {
-            name: "Contact",
-            path: "/contact",
-        },
+        { name: "Home", path: "/", },
+        { name: "About", path: "/about", },
+        { name: "Menu", path: "/menu", },
+        { name: "Chefs", path: "/chefs", },
+        { name: "Reservation", path: "/reservation", },
+        { name: "Reviews", path: "/reviews", },
+        { name: "Contact", path: "/contact", },
     ];
+
+    // Fetch logged-in user's profile
+    const getProfile = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                setUser(null);
+                return;
+            }
+            const res = await api.get("/api/users/profile", {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+
+            if (res.data.success) {
+                setUser(res.data.data);
+            } else {
+                setUser(null);
+            }
+        } catch (error) {
+            console.error("Error fetching profile:", error.response?.data || error.message);
+            localStorage.removeItem("token");
+            setUser(null);
+        }
+    };
+
+    // Check login user
+    useEffect(() => {
+        getProfile();
+    }, []);
+
+    // useEffect(() => {
+    //     const getUserToken = localStorage.getItem("token");
+
+    //     if (getUserToken) {
+    //         if (getUserToken) {
+    //             setUser(true);
+    //         }
+    //     } else {
+    //         setUser(null);
+    //     }
+    // }, []);
+
+    // Logout
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        setUser(null);
+        setUserMenuOpen(false);
+
+        navigate("/userlogin");
+    };
 
     return (
         <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 shadow-sm backdrop-blur">
@@ -55,7 +97,7 @@ export default function Header() {
                 {/* Logo */}
                 <Link to="/" className="inline-block">
                     <div className="flex items-center gap-4 px-7 py-5">
-                        {/* Icon */}
+
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f4511e] shadow-lg shadow-orange-200">
                             <Utensils
                                 size={25}
@@ -64,7 +106,6 @@ export default function Header() {
                             />
                         </div>
 
-                        {/* Brand Text */}
                         <div>
                             <h1 className="font-serif text-[28px] font-bold leading-none tracking-tight text-[#252525]">
                                 Sar<span className="text-[#e94b2b]">ab</span>
@@ -74,6 +115,7 @@ export default function Header() {
                                 FAST FOOD & RESTAURANT
                             </p>
                         </div>
+
                     </div>
                 </Link>
 
@@ -100,17 +142,86 @@ export default function Header() {
                 {/* Desktop Buttons */}
                 <div className="hidden items-center gap-4 lg:flex">
 
-                    <button>
+                    {/* USER */}
+                    <div className="relative">
+
+                        <button
+                            onClick={() =>
+                                setUserMenuOpen(!userMenuOpen)
+                            }
+                            className="flex items-center justify-center rounded-full p-1 transition hover:bg-gray-100"
+                        >
+                            <User size={21} />
+                        </button>
+
+                        {/* Dropdown */}
+                        {userMenuOpen && (
+                            <div className="absolute right-0 top-11 z-50 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+
+                                {user ? (
+                                    <>
+                                        {/* User Info */}
+                                        <div className="border-b bg-gray-50 px-4 py-3">
+                                            <p className="font-semibold text-gray-800">
+                                                {user?.fullname || "User"}
+                                            </p>
+
+                                            <p className="truncate text-sm text-gray-500">
+                                                {user?.email || "user email"}
+                                            </p>
+                                        </div>
+
+                                        {/* Profile */}
+                                        <button
+                                            onClick={() => {
+                                                setUserMenuOpen(false);
+                                                navigate("/profile");
+                                            }}
+                                            className="flex w-full items-center gap-3 px-4 py-3 text-left text-gray-700 transition hover:bg-orange-50 hover:text-orange-600"
+                                        >
+                                            <UserCircle size={19} />
+                                            <span>Profile</span>
+                                        </button>
+
+                                        {/* Logout */}
+                                        <button
+                                            onClick={handleLogout}
+                                            className="flex w-full items-center gap-3 border-t px-4 py-3 text-left text-red-500 transition hover:bg-red-50"
+                                        >
+                                            <LogOut size={19} />
+                                            <span>Logout</span>
+                                        </button>
+                                    </>
+                                ) : (
+                                    /* Login */
+                                    <button
+                                        onClick={() => {
+                                            setUserMenuOpen(false);
+                                            navigate("/userlogin");
+                                        }}
+                                        className="flex w-full items-center gap-3 px-4 py-3 text-left text-gray-700 transition hover:bg-orange-50 hover:text-orange-600"
+                                    >
+                                        <User size={19} />
+                                        <span>Login</span>
+                                    </button>
+                                )}
+
+                            </div>
+                        )}
+
+                    </div>
+
+                    {/* Search */}
+                    <button onClick={() => navigate("/search")}>
                         <Search size={21} />
                     </button>
-                    <button onClick={() => navigate("/userRegister")}>
-                        <User size={21} />
-                    </button>
 
-                    <button>
+                    {/* Shopping Bag */}
+                    <button onClick={() => navigate("/cart")}>
                         <ShoppingBag size={21} />
                     </button>
 
+                    {/* Order Now */}
                     <Link
                         to="/orders"
                         className="rounded-full bg-orange-600 px-5 py-3 font-bold text-white transition hover:bg-orange-700"
@@ -122,9 +233,7 @@ export default function Header() {
 
                 {/* Mobile Button */}
                 <button
-                    onClick={() =>
-                        setIsOpen(!isOpen)
-                    }
+                    onClick={() => setIsOpen(!isOpen)}
                     className="lg:hidden"
                 >
                     {isOpen ? (
@@ -146,20 +255,54 @@ export default function Header() {
                             <NavLink
                                 key={link.name}
                                 to={link.path}
-                                onClick={() =>
-                                    setIsOpen(false)
-                                }
+                                onClick={() => setIsOpen(false)}
                                 className="font-bold text-gray-700"
                             >
                                 {link.name}
                             </NavLink>
                         ))}
 
+                        {/* Mobile User */}
+                        {user ? (
+                            <>
+                                <button
+                                    onClick={() => {
+                                        setIsOpen(false);
+                                        navigate("/profile");
+                                    }}
+                                    className="flex items-center gap-3 font-bold text-gray-700"
+                                >
+                                    <UserCircle size={20} />
+                                    Profile
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setIsOpen(false);
+                                        handleLogout();
+                                    }}
+                                    className="flex items-center gap-3 font-bold text-red-500"
+                                >
+                                    <LogOut size={20} />
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    navigate("/userlogin");
+                                }}
+                                className="flex items-center gap-3 font-bold text-gray-700"
+                            >
+                                <User size={20} />
+                                Login
+                            </button>
+                        )}
+
                         <Link
                             to="/reservation"
-                            onClick={() =>
-                                setIsOpen(false)
-                            }
+                            onClick={() => setIsOpen(false)}
                             className="rounded-xl bg-red-600 py-3 text-center font-bold text-white"
                         >
                             Book a Table

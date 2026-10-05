@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { LogIn, Mail, Lock, ArrowRight } from "lucide-react";
 import api from "../../api/api";
@@ -14,6 +13,14 @@ export default function UserLogin() {
   });
 
   const [loading, setLoading] = useState(false);
+
+  // If loggen in, redirect to profile page
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/profile");
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,15 +43,19 @@ export default function UserLogin() {
       setLoading(true);
 
       const res = await api.post("/api/users/userlogin", user)
+      console.log("Login response:", res.data);
 
-      // const res = await axios.post(
-      //   "http://localhost:5000/api/users/userlogin",
-      //   user
-      // );
+      if (res.data.success) {
+        localStorage.setItem("token", res.data.token);
 
-      toast.success(res.data.message || "Login successful");
+        toast.success(res.data.message);
+        navigate("/");
+        window.location.reload();
+      } else {
+        toast.error(res.data.message)
+      }
+      console.log(res);
 
-      navigate("/");
     } catch (error) {
       console.log(error);
 
